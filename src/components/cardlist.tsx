@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-
+import { useState, useEffect } from 'react';
+import { CardForm } from 'components/cardform';
 
 type Card = {
   id: string;
@@ -9,23 +8,19 @@ type Card = {
   difficulty: 'easy' | 'medium' | 'hard';
 };
 
-// Remova o parâmetro deckId daqui
-export function CardList() {
-  // Pegue deckId da URL
-  const { deckId } = useParams<{ deckId: string }>();
+type CardListProps = {
+  deckId: string;
+};
 
+export function CardList({ deckId }: CardListProps) {
   const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
-    if (!deckId) return;
-
     const stored = localStorage.getItem(`cards-${deckId}`);
     if (stored) setCards(JSON.parse(stored));
   }, [deckId]);
 
   useEffect(() => {
-    if (!deckId) return;
-
     localStorage.setItem(`cards-${deckId}`, JSON.stringify(cards));
   }, [cards, deckId]);
 
@@ -37,15 +32,11 @@ export function CardList() {
     setCards(cards.filter((card) => card.id !== id));
   }
 
-  if (!deckId) {
-    return <p>Deck não encontrado.</p>;
-  }
-
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Cards do Deck</h1>
 
-      {/* Aqui deve ter seu CardForm, que chama handleAddCard */}
+      <CardForm onAdd={handleAddCard} />
 
       {cards.length === 0 && (
         <p className="text-gray-600 italic mt-4">Nenhum card criado ainda.</p>
@@ -77,17 +68,3 @@ export function CardList() {
     </div>
   );
 }
-
-const App: React.FC = () => {
-  return (
-    <div>
-      {/* Your app content */}
-    </div>
-  );
-};
-
-// Named export
-export { App };
-
-// Or you can use: export const App: React.FC = () => { ... };
-
